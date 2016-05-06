@@ -92,8 +92,7 @@ max_connections set to C<0>.
   my $url = $reader->url;
   $reader = $reader->url('http://another.example.com/rss');
 
-URL of a feed to fetch. Required. Object will die on first request unless
-specified.
+URL of a feed to fetch.
 
 =head1 METHODS
 

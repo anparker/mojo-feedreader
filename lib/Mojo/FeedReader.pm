@@ -12,7 +12,7 @@ has interval => 600;
 has ioloop   => sub { Mojo::IOLoop->singleton() };
 has info     => sub { {} };
 has ua       => sub { Mojo::UserAgent->new()->max_connections(0) };
-has url      => sub { die 'url is required' };
+has url      => '';
 
 our $VERSION = '0.10';
 
@@ -198,8 +198,7 @@ max_connections set to C<0>.
   my $url = $reader->url;
   $reader = $reader->url('http://another.example.com/rss');
 
-URL of a feed to fetch. Required. Object will die on first request unless
-specified.
+URL of a feed to fetch.
 
 =head1 METHODS
 
