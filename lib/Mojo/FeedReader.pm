@@ -26,8 +26,10 @@ sub new {
 
   $self->once(fetch => \&_prepare);
 
-  # Don't want to access url attr before event loop start.
-  $self->ioloop->next_tick(sub { $self->_fetch() });
+  # Don't want to access url attr until event loop start.
+  my $wself = $self;
+  weaken $wself;
+  $self->ioloop->next_tick(sub { $wself && $wself->_fetch() });
   $self;
 }
 

@@ -3,14 +3,12 @@ use Mojo::Base -strict;
 
 use Mojo::IOLoop;
 use Mojolicious::Lite;
-use Test::More tests => 13;
+use Test::More tests => 14;
 
 use Mojo::FeedReader;
 
-
 # Silence
 app->log->level('fatal');
-
 
 get '/hello' => sub { $_[0]->render(text => 'Hello there!') };
 
@@ -24,11 +22,17 @@ get '/atom' => sub {
   $c->render(format => 'xml',);
 };
 
-
 my $reader = Mojo::FeedReader->new('/hello');
 is($reader->url, '/hello', 'url as argument');
 
 my ($res, $data);
+
+$reader = Mojo::FeedReader->new('/not-found');
+$reader->on(error => sub { $res = $_[1] });
+$reader = undef;
+Mojo::IOLoop->timer(0.25 => sub { Mojo::IOLoop->stop() });
+Mojo::IOLoop->start();
+is($res, undef, 'object instance destroy');
 
 # data (atom)
 $reader = Mojo::FeedReader->new(url => '/atom?from=10', interval => 0.25);
@@ -53,7 +57,6 @@ Mojo::IOLoop->start();
 $data = [map { _item_atom($_) } (19, 18, 17)];
 is_deeply($res, $data, 'fetch new entries, second (atom)');
 
-
 # data (rss)
 $reader = Mojo::FeedReader->new(url => '/rss?from=10', interval => 0.25);
 $reader->on(
@@ -77,7 +80,6 @@ Mojo::IOLoop->start();
 $data = [map { _item_rss($_) } (19, 18, 17)];
 is_deeply($res, $data, 'fetch new entries, second (rss)');
 
-
 # isa
 my ($isa_res, $isa_feed) = @_;
 $reader = Mojo::FeedReader->new(url => '/rss?from=10', interval => 0.25);
@@ -91,7 +93,6 @@ $reader->on(
 Mojo::IOLoop->start();
 isa_ok($isa_res,  'Mojo::Collection', 'response');
 isa_ok($isa_feed, 'Mojo::DOM',        'feed');
-
 
 # error
 my $err;
@@ -109,7 +110,6 @@ Mojo::IOLoop->start();
 is($err, 'Not Found',        'error text');
 is($res, 'fetch-not-called', 'result on error');
 
-
 # interval
 my ($start_time, $end_time, $i);
 $i = 2;
@@ -124,7 +124,6 @@ $reader->on(
 $start_time = time;
 Mojo::IOLoop->start();
 is_deeply([$start_time, $start_time + 1], $end_time, 'interval');
-
 
 # ttl
 $end_time = [];
@@ -141,9 +140,7 @@ $start_time = time;
 Mojo::IOLoop->start();
 is_deeply([$start_time, $start_time + 1], $end_time, 'ttl from feed');
 
-
 done_testing();
-
 
 sub _item_atom {
   {
