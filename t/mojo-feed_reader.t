@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Mojo::Base -strict;
 
-# use Mojo::IOLoop;
+use Mojo::IOLoop;
 use Mojolicious::Lite;
 use Test::More tests => 13;
 

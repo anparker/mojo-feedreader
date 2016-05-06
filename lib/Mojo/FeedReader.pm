@@ -134,7 +134,7 @@ Mojo::FeedReader - minimalistic feed reader.
 
 =head1 DESCRIPTION
 
-Very minimalistic RSS/ATOM feed and monitor based on L<Mojo::UserAgent> and
+Very minimalistic RSS/ATOM feed reader based on L<Mojo::UserAgent> and
 L<Mojo::DOM>.
 
 =head1 EVENTS
