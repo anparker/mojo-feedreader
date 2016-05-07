@@ -22,7 +22,7 @@ sub DESTROY {
 }
 
 sub new {
-  my $self = shift->SUPER::new(@_ == 1 && !ref $_[0] ? {url => $_[0]} : @_);
+  my $self = shift->SUPER::new(@_ == 1 && !ref $_[0] ? (url => $_[0]) : @_);
 
   $self->once(fetch => \&_prepare);
 
