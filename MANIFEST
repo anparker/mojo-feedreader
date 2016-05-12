@@ -1,6 +1,4 @@
-.perltidyrc
 lib/Mojo/FeedReader.pm
 Makefile.PL
 MANIFEST			This list of files
-README.pod
 t/mojo-feed_reader.t
