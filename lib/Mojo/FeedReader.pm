@@ -11,7 +11,7 @@ use Scalar::Util qw(looks_like_number weaken);
 has interval => 600;
 has ioloop   => sub { Mojo::IOLoop->singleton() };
 has info     => sub { {} };
-has ua       => sub { Mojo::UserAgent->new()->max_connections(0) };
+has ua       => sub { Mojo::UserAgent->new()->max_redirects(2) };
 has url      => '';
 
 our $VERSION = '0.10';
@@ -193,7 +193,7 @@ Hashref with feed metadata. Holds various info fetched from feed.
   $reader = $reader->ua(Mojo::UserAgent->new());
 
 User agent object to use for requests. Defaults to a L<Mojo::UserAgent> with
-max_connections set to C<0>.
+max_redirects set to C<2>.
 
 =head2 url
 
