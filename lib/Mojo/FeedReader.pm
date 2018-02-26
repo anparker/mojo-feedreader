@@ -70,8 +70,9 @@ sub _handle_entries {
     $entry->{link} = $dom_entry->at('link')->attr('href') || ''
       if exists $entry->{link} && !$entry->{link};
 
-    my $hash = sha1_sum encode 'UTF-8', join '/',
-      grep {defined} @{[@{$entry}{qw(title link id)}]};
+    my $hash = '';
+    $hash .= $entry->{$_} // '' for qw(title link id);
+    $hash = sha1_sum encode 'UTF-8', $hash;
     my $was_cached = delete $cache->{$hash};
     $cache->{$hash} = $now;
     next if $was_cached;
