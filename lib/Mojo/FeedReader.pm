@@ -14,8 +14,7 @@ has info     => sub { {} };
 has ua       => sub { Mojo::UserAgent->new()->max_redirects(2) };
 has url      => '';
 
-our $VERSION = '0.10';
-
+our $VERSION = '0.20';
 
 sub DESTROY {
   Mojo::Util::_global_destruction()
