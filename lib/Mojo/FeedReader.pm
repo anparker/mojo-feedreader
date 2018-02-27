@@ -111,7 +111,7 @@ __END__
 
 =head1 NAME
 
-Mojo::FeedReader - minimalistic feed reader.
+Mojo::FeedReader - minimalistic perl feed reader
 
 =head1 SYNOPSIS
 
@@ -137,7 +137,7 @@ Mojo::FeedReader - minimalistic feed reader.
 
 =head1 DESCRIPTION
 
-Very minimalistic RSS/ATOM feed reader based on L<Mojo::UserAgent> and
+Very minimalistic perl RSS/ATOM feed reader based on L<Mojo::UserAgent> and
 L<Mojo::DOM>.
 
 =head1 EVENTS
@@ -152,7 +152,7 @@ the following new ones.
     ...
   });
 
-Emitted mostly on L<Mojo::UserAgent> errors.
+Emitted on errors.
 
 =head2 fetch
 
@@ -161,8 +161,8 @@ Emitted mostly on L<Mojo::UserAgent> errors.
     ...
   });
 
-Emitted when new entries are available. Receives L<Mojo::Collection> of hashrefs
-with fetched entries and L<Mojo::DOM> object with parsed feed.
+Emitted when new entries are available. Receives a L<Mojo::Collection> of hashrefs
+with fetched entries and a L<Mojo::DOM> object with parsed feed.
 
 =head1 ATTRIBUTES
 
@@ -186,7 +186,7 @@ Event loop object to control, defaults to the global L<Mojo::IOLoop> singleton.
   my $info = $reader->info;
   $reader  = $reader->info({title => 'Test feed'});
 
-Hashref with feed metadata. Holds various info fetched from feed.
+Hashref with a feed metadata. Holds various info fetched from the feed.
 
 =head2 ua
 
@@ -205,18 +205,20 @@ URL of a feed to fetch.
 
 =head1 METHODS
 
+Some convenient shortcuts for controlling an event loop.
+
 =head2 stop
 
-  # remove timer and stop receiving feed updates.
+  # remove a timer and stop receiving feed updates.
   $reader->stop();
 
-  # remove timer and stop event loop
+  # remove a timer and stop an event loop
   $reader->stop(1);
 
-Stop receiving updates and remove recurring timer without removing an object
-instance itself.  It will be impossible to start again.
+Stop receiving updates and remove recurring timer. It will be impossible to
+start again.
 
-Will stop L</ioloop> if called with an argument.
+Will stop an L</ioloop> if called with an argument.
 
 =head2 wait
 
@@ -224,13 +226,11 @@ Will stop L</ioloop> if called with an argument.
     ->on(fetch => sub { ... });
   $reader->wait();
 
-Start L</ioloop> unless it's already running.
+Starts an L</ioloop> unless it's already running.
 
-=head1 AUTHOR
+=head1 COPYRIGHT AND LICENSE
 
-Andre Parker <andreparker@gmail.com>
-
-=head1 LICENSE
+Andre Parker <andreparker@gmail.com>, 2016, 2018.
 
 This program is free software, you can redistribute it and/or modify it under
 the terms of the Artistic License version 2.0.
