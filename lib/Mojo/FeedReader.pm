@@ -19,7 +19,7 @@ our $VERSION = '0.10';
 
 sub DESTROY {
   Mojo::Util::_global_destruction()
-    or ($_[0]->{timer} && $_[0]->ioloop->remove($_[0]->{timer}));
+    or ($_[0]->{_timer} && $_[0]->ioloop->remove($_[0]->{_timer}));
 }
 
 sub new {
@@ -35,7 +35,7 @@ sub new {
 }
 
 sub stop {
-  $_[0]->ioloop->remove($_[0]->{timer}) if @_ > 1 && $_[0]->{timer};
+  $_[0]->ioloop->remove($_[0]->{_timer}) if @_ > 1 && $_[0]->{_timer};
   $_[0]->ioloop->stop();
 }
 
@@ -98,7 +98,7 @@ sub _prepare {
     if looks_like_number $self->{info}{ttl};
 
   weaken $self;
-  $self->{timer}
+  $self->{_timer}
     = Mojo::IOLoop->recurring($self->interval => sub { $self->_fetch() });
 
   $self;
