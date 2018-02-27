@@ -34,8 +34,8 @@ sub new {
 }
 
 sub stop {
-  $_[0]->ioloop->stop() if @_ > 1;
-  $_[0]->ioloop->remove($_[0]->{timer}) if $_[0]->{timer};
+  $_[0]->ioloop->remove($_[0]->{timer}) if @_ > 1 && $_[0]->{timer};
+  $_[0]->ioloop->stop();
 }
 
 sub wait {
@@ -209,16 +209,16 @@ Some convenient shortcuts for controlling an event loop.
 
 =head2 stop
 
-  # remove a timer and stop receiving feed updates.
+  # stop an event loop
   $reader->stop();
 
-  # remove a timer and stop an event loop
+  # stop an event loop and remove a recurring timer
   $reader->stop(1);
 
-Stop receiving updates and remove recurring timer. It will be impossible to
-start again.
+Stops an L</ioloop>.
 
-Will stop an L</ioloop> if called with an argument.
+If called with an argument, will remove a recurring fetch timer as well. It will
+be impossible to restart again.
 
 =head2 wait
 
