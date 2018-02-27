@@ -18,7 +18,8 @@ our $VERSION = '0.10';
 
 
 sub DESTROY {
-  $_[0]->ioloop->remove($_[0]->{timer}) if $_[0]->{timer};
+  Mojo::Util::_global_destruction()
+    or ($_[0]->{timer} && $_[0]->ioloop->remove($_[0]->{timer}));
 }
 
 sub new {
