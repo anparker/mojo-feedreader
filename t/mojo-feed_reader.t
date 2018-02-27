@@ -3,7 +3,7 @@ use Mojo::Base -strict;
 
 use Mojo::IOLoop;
 use Mojolicious::Lite;
-use Test::More tests => 14;
+use Test::More;
 
 use Mojo::FeedReader;
 
@@ -23,26 +23,25 @@ get '/atom' => sub {
 };
 
 my $reader = Mojo::FeedReader->new('/hello');
-is($reader->url, '/hello', 'url as argument');
+is($reader->url, '/hello', 'url as an argument');
 
 my ($res, $data);
 
 $reader = Mojo::FeedReader->new('/not-found');
 $reader->on(error => sub { $res = $_[1] });
 $reader = undef;
-Mojo::IOLoop->timer(0.25 => sub { Mojo::IOLoop->stop() });
+Mojo::IOLoop->timer(0.1 => sub { Mojo::IOLoop->stop() });
 Mojo::IOLoop->start();
-is($res, undef, 'object instance destroy');
+is($res, undef, 'object instance destroyed');
 
 # data (atom)
-$reader = Mojo::FeedReader->new(url => '/atom?from=10', interval => 0.25);
+$reader = Mojo::FeedReader->new(url => '/atom?from=10', interval => 0.1);
 $reader->on(
   fetch => sub {
     $res = $_[1];
     Mojo::IOLoop->stop();
   }
 );
-
 Mojo::IOLoop->start();
 $data = [map { _item_atom($_) } (reverse 10 .. 14)];
 is_deeply($res, $data, 'fetch initial data (atom)');
@@ -58,14 +57,13 @@ $data = [map { _item_atom($_) } (19, 18, 17)];
 is_deeply($res, $data, 'fetch new entries, second (atom)');
 
 # data (rss)
-$reader = Mojo::FeedReader->new(url => '/rss?from=10', interval => 0.25);
+$reader = Mojo::FeedReader->new(url => '/rss?from=10', interval => 0.1);
 $reader->on(
   fetch => sub {
     $res = $_[1];
     Mojo::IOLoop->stop();
   }
 );
-
 Mojo::IOLoop->start();
 $data = [map { _item_rss($_) } (reverse 10 .. 14)];
 is_deeply($res, $data, 'fetch initial data (rss)');
@@ -82,7 +80,7 @@ is_deeply($res, $data, 'fetch new entries, second (rss)');
 
 # isa
 my ($isa_res, $isa_feed) = @_;
-$reader = Mojo::FeedReader->new(url => '/rss?from=10', interval => 0.25);
+$reader = Mojo::FeedReader->new(url => '/rss?from=10', interval => 0.1);
 $reader->on(
   fetch => sub {
     (undef, $isa_res, $isa_feed) = @_;
@@ -97,7 +95,7 @@ isa_ok($isa_feed, 'Mojo::DOM',        'feed');
 # error
 my $err;
 $res = 'fetch-not-called';
-$reader = Mojo::FeedReader->new(url => '/not-found', interval => 0.25);
+$reader = Mojo::FeedReader->new(url => '/not-found', interval => 0.1);
 $reader->on(fetch => sub { $res = $_[1] });
 $reader->on(
   error => sub {
@@ -107,38 +105,19 @@ $reader->on(
 );
 
 Mojo::IOLoop->start();
-is($err, 'Not Found',        'error text');
-is($res, 'fetch-not-called', 'result on error');
-
-# interval
-my ($start_time, $end_time, $i);
-$i = 2;
-$reader = Mojo::FeedReader->new(url => '/rss', interval => 1);
-$reader->on(
-  fetch => sub {
-    push @$end_time, time;
-    Mojo::IOLoop->stop() unless --$i;
-  }
-);
-
-$start_time = time;
-Mojo::IOLoop->start();
-is_deeply([$start_time, $start_time + 1], $end_time, 'interval');
+is($err, 'Not Found',        'right error');
+is($res, 'fetch-not-called', 'no result');
 
 # ttl
-$end_time = [];
-$i        = 2;
-$reader   = Mojo::FeedReader->new(url => '/rss?ttl=0.016666666', interval => 3);
+$reader = Mojo::FeedReader->new(url => '/rss?ttl=21', interval => 600);
 $reader->on(
   fetch => sub {
-    push @$end_time, time;
-    Mojo::IOLoop->stop() unless --$i;
+    $res = $_[0]->interval;
+    Mojo::IOLoop->stop();
   }
 );
-
-$start_time = time;
 Mojo::IOLoop->start();
-is_deeply([$start_time, $start_time + 1], $end_time, 'ttl from feed');
+is $res, 1260, 'right interval from ttl';
 
 done_testing();
 
