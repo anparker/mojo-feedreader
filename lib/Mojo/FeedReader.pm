@@ -49,10 +49,9 @@ sub _fetch {
     $self->url => sub {
       my ($ua, $tx) = @_;
 
-      return $self->emit(error => $tx->error->{message})
-        unless my $res = $tx->success;
-
-      $self->_handle_entries(Mojo::DOM->new()->xml(1)->parse($res->text));
+      if (my $err = $tx->error) { return $self->emit(error => $err->{message}) }
+      $self->_handle_entries(
+        Mojo::DOM->new()->xml(1)->parse($tx->result->text));
     }
   );
 }
